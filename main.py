@@ -319,7 +319,7 @@ def geneticAlgorithmCycle(initPopulation, generationCount):
 
 def main():
     myPopulation = generatePopulation(30)
-    generations = geneticAlgorithmCycle(myPopulation,40)
+    generations = geneticAlgorithmCycle(myPopulation,80)
 
     xPoint = []
     yPoint = []
