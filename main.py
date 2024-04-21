@@ -167,25 +167,43 @@ def routeWheelSelection(probabilities):
 
 
 # CrossOver
+def crossoverAndMutation(pairParent,mask,rate):
+    childs = crossoverWithUniform(pairParent, mask)
+    child1 = childs['child1']
+    child2 = childs['child2']
+
+    mutatedChild1 = mutationWithSwap(child1,rate)
+    mutatedChild2 = mutationWithSwap(child2,rate)
+
+
+    return {
+        'child1' : mutatedChild1,
+        'child2' : mutatedChild2
+    }
+
+
 def crossoverWithUniform(pairParent,mask):
     parent1 = pairParent['parent1']
     parent2 = pairParent['parent2']
 
+    child1 = parent1.copy()
+    child2 = parent2.copy()
+
     for index, value in enumerate(mask):
         if(value == 1):
             if(parent1[index] == 0):
-                parent1[index] = 1
+                child1[index] = 1
             else :
-                parent1[index] = 0
+                child2[index] = 0
 
             if(parent2[index] == 0):
-                parent2[index] = 1
+                child1[index] = 1
             else :
-                parent2[index] = 0
+                child2[index] = 0
     
     return {
-        'child1' : parent1,
-        'child2' : parent2
+        'child1' : child1,
+        'child2' : child2
     }
 
 def mutationWithSwap(chromosome, rate):
@@ -200,8 +218,6 @@ def mutationWithSwap(chromosome, rate):
 
 # Menghasilkan Array berisi kromosom generasi berikutnya
 def childEvalutaion(parents, childs):
-    print(parents)
-    print(childs)
     newGenerationChromosome = {
         'chromosome1' : parents['parent1'],
         'chromosome2' : parents['parent2']
@@ -219,8 +235,8 @@ def childEvalutaion(parents, childs):
     isChild1EvaluationPass = -3 <= child1Evaluation <= 3
     isChild2EvaluationPass = -3 <= child2Evaluation <= 3
 
-    print( "child1pass",child1Evaluation ,isChild1EvaluationPass)
-    print("child2pass",child2Evaluation ,isChild2EvaluationPass)
+    print( "child1pass" ,isChild1EvaluationPass)
+    print("child2pass",isChild2EvaluationPass)
 
     # Mengecek apakah nilai fitness child lebih kecil dari parent
     if(isChild1EvaluationPass == True):
@@ -252,7 +268,7 @@ def main() :
     newGen = childEvalutaion(myPairParents[0], childs)
     print(fitnessEvaluation(newGen['chromosome1']))
     print(fitnessEvaluation(newGen['chromosome2']))
-    # print(newGen)
+
 
 
 main()
