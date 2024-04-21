@@ -1,5 +1,6 @@
 import random;
 import math
+import numpy as np
 
 
 # GENERATE POPULASI
@@ -166,11 +167,92 @@ def routeWheelSelection(probabilities):
 
 
 # CrossOver
+def crossoverWithUniform(pairParent,mask):
+    parent1 = pairParent['parent1']
+    parent2 = pairParent['parent2']
 
-def  main() :
-    myPopulation = generatePopulation(10)
-    myPairParent = rwsSelection(myPopulation)
-    print(myPairParent)
+    for index, value in enumerate(mask):
+        if(value == 1):
+            if(parent1[index] == 0):
+                parent1[index] = 1
+            else :
+                parent1[index] = 0
+
+            if(parent2[index] == 0):
+                parent2[index] = 1
+            else :
+                parent2[index] = 0
+    
+    return {
+        'child1' : parent1,
+        'child2' : parent2
+    }
+
+def mutationWithSwap(chromosome, rate):
+    mutatedChromosome = chromosome.copy()
+    for i in range(len(mutatedChromosome)):
+        if np.random.rand() < rate:
+            geneToMove = mutatedChromosome[i]
+            del mutatedChromosome[i]
+            newIndex = np.random.randint(0, len(mutatedChromosome))
+            mutatedChromosome.insert(newIndex, geneToMove)
+    return mutatedChromosome
+
+# Menghasilkan Array berisi kromosom generasi berikutnya
+def childEvalutaion(parents, childs):
+    print(parents)
+    print(childs)
+    newGenerationChromosome = {
+        'chromosome1' : parents['parent1'],
+        'chromosome2' : parents['parent2']
+    }
+
+    parent1Fitness = fitnessEvaluation(parents['parent1'])
+    parent2Fitness = fitnessEvaluation(parents['parent2'])
+
+    child1Evaluation = evaluationChromosome(childs['child1'])
+    child2Evaluation = evaluationChromosome(childs['child2'])
+    child1Fitness = fitnessEvaluation(childs['child1'])
+    child2Fitness = fitnessEvaluation(childs['child2'])
+
+    # Mengecek apakah nilai evaluasi child dalam rentang batas
+    isChild1EvaluationPass = -3 <= child1Evaluation <= 3
+    isChild2EvaluationPass = -3 <= child2Evaluation <= 3
+
+    print( "child1pass",child1Evaluation ,isChild1EvaluationPass)
+    print("child2pass",child2Evaluation ,isChild2EvaluationPass)
+
+    # Mengecek apakah nilai fitness child lebih kecil dari parent
+    if(isChild1EvaluationPass == True):
+        if(child1Fitness < parent1Fitness):
+            newGenerationChromosome['chromosome1'] = childs['child1']
+
+    if(isChild2EvaluationPass == True):
+        if(child2Fitness < parent2Fitness):
+            newGenerationChromosome['chromosome2'] = childs['child2']
+    return newGenerationChromosome
+    
+
+def main() :
+    myPopulation = generatePopulation(4)
+    myPairParents =  rwsSelection(myPopulation)
+    print("=======PARENTS========")
+
+    print(fitnessEvaluation(myPairParents[0]['parent1']))
+    print(fitnessEvaluation(myPairParents[0]['parent2']))
+    mask = generateCompletedChromosome()
+    childs = crossoverWithUniform(myPairParents[0], mask)
+    print("mask", mask)
+    print("======CHILD========")
+
+    print(fitnessEvaluation(childs['child1']))
+    print(fitnessEvaluation(childs['child2']))
+
+    print("=======NEW GEN=======")
+    newGen = childEvalutaion(myPairParents[0], childs)
+    print(fitnessEvaluation(newGen['chromosome1']))
+    print(fitnessEvaluation(newGen['chromosome2']))
+    # print(newGen)
 
 
 main()
