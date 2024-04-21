@@ -1,5 +1,6 @@
 import random;
 import math
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -287,8 +288,10 @@ def geneticAlgorithmCycle(initPopulation, generationCount):
     # print(myNewGeneration)
 
     newGenerationDump = myPopulation.copy()
+    fitnessesInCylce = []
     for generation in range(1,generationCount+1):
         myNewGenerationInCycle = []
+        
         myPairParents = rwsSelection(newGenerationDump)
         mask = generateCompletedChromosome()
 
@@ -297,17 +300,38 @@ def geneticAlgorithmCycle(initPopulation, generationCount):
             newGeneration = childEvalutaion(pairParent,childs)
             myNewGenerationInCycle.append(newGeneration['chromosome1'])
             myNewGenerationInCycle.append(newGeneration['chromosome2'])
+
+            fitnessNewGeneration1 = fitnessEvaluation(newGeneration['chromosome1'])
+            fitnessNewGeneration2 = fitnessEvaluation(newGeneration['chromosome2'])
+
+            fitnessesInCylce.append(fitnessNewGeneration1),
+            fitnessesInCylce.append(fitnessNewGeneration2)
         
+        minFitnessInCycle = min(fitnessesInCylce)
         myNewGeneration.append({
             'generation' : generation,
-            'population' : myNewGenerationInCycle
+            'population' : myNewGenerationInCycle,
+            'fitness' : fitnessesInCylce,
+            'fitnessMin' : minFitnessInCycle
         })
 
-    print(myNewGeneration)
+    return myNewGeneration
 
 def main():
-    myPopulation = generatePopulation(4)
-    geneticAlgorithmCycle(myPopulation,6)
+    myPopulation = generatePopulation(30)
+    generations = geneticAlgorithmCycle(myPopulation,40)
 
+    xPoint = []
+    yPoint = []
+    for gen in generations:
+        xPoint.append(gen['generation'])
+        yPoint.append(gen['fitnessMin'])
+        
+
+    plt.plot(xPoint,yPoint)
+    plt.xlabel("Generasi")
+    plt.ylabel("Fitness")
+    plt.grid()
+    plt.show()
 
 main()
