@@ -235,8 +235,8 @@ def childEvalutaion(parents, childs):
     isChild1EvaluationPass = -3 <= child1Evaluation <= 3
     isChild2EvaluationPass = -3 <= child2Evaluation <= 3
 
-    print( "child1pass" ,isChild1EvaluationPass)
-    print("child2pass",isChild2EvaluationPass)
+    # print( "child1pass" ,isChild1EvaluationPass)
+    # print("child2pass",isChild2EvaluationPass)
 
     # Mengecek apakah nilai fitness child lebih kecil dari parent
     if(isChild1EvaluationPass == True):
@@ -249,7 +249,7 @@ def childEvalutaion(parents, childs):
     return newGenerationChromosome
     
 
-def main() :
+def main2() :
     myPopulation = generatePopulation(4)
     myPairParents =  rwsSelection(myPopulation)
     print("=======PARENTS========")
@@ -269,6 +269,45 @@ def main() :
     print(fitnessEvaluation(newGen['chromosome1']))
     print(fitnessEvaluation(newGen['chromosome2']))
 
+
+def geneticAlgorithmCycle(initPopulation, generationCount):
+    myPopulation = initPopulation.copy()
+    # myPairParents = rwsSelection(myPopulation)
+    
+    # print(myPopulation)
+
+    myNewGeneration = []    
+    # mask = generateCompletedChromosome()
+    # for pairParent in myPairParents:
+    #     childs = crossoverAndMutation(pairParent, mask, 0.05)
+    #     newGeneration = childEvalutaion(pairParent,childs)
+    #     myNewGeneration.append(newGeneration['chromosome1'])
+    #     myNewGeneration.append(newGeneration['chromosome2'])
+
+    # print(myNewGeneration)
+
+    newGenerationDump = myPopulation.copy()
+    for generation in range(1,generationCount+1):
+        myNewGenerationInCycle = []
+        myPairParents = rwsSelection(newGenerationDump)
+        mask = generateCompletedChromosome()
+
+        for pairParent in myPairParents:
+            childs = crossoverAndMutation(pairParent, mask, 0.05)
+            newGeneration = childEvalutaion(pairParent,childs)
+            myNewGenerationInCycle.append(newGeneration['chromosome1'])
+            myNewGenerationInCycle.append(newGeneration['chromosome2'])
+        
+        myNewGeneration.append({
+            'generation' : generation,
+            'population' : myNewGenerationInCycle
+        })
+
+    print(myNewGeneration)
+
+def main():
+    myPopulation = generatePopulation(4)
+    geneticAlgorithmCycle(myPopulation,6)
 
 
 main()
